@@ -68,6 +68,9 @@ public class ProductController {
     @PostMapping(value = "/Produits")
 
     public ResponseEntity<Void> ajouterProduit(@Valid @RequestBody Product product) {
+        if(product.getPrix() == 0){
+            return ResponseEntity.badRequest().build();
+        }
 
         Product productAdded =  productDao.save(product);
 
@@ -95,6 +98,17 @@ public class ProductController {
         productDao.save(product);
     }
 
+    @GetMapping(value = "/Produits/marge/{id}")
+    public int calculerMargeProduit(@PathVariable int id){
+        Product product = productDao.findById(id);
+        return product.getPrix() - product.getPrixAchat();
+    }
+
+    @GetMapping(value = "/Produits/tri/alpha")
+    public List<Product> trierProduitsParOrdreAlphabetique(){
+        //Product product = productDao.findById(id);
+        return productDao.findByOrderByNomAsc();
+    }
 
     //Pour les tests
     @GetMapping(value = "test/produits/{prix}")
